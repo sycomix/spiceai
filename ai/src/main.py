@@ -262,9 +262,9 @@ class AIEngine(aiengine_pb2_grpc.AIEngineServicer):
                 connector_data = datasource_data.connector
                 connector_name: ConnectorName = connector_data.name
 
-                datasource_actions = datasource_data.actions
-
                 if connector_name == ConnectorName.STATEFUL.value:
+                    datasource_actions = datasource_data.actions
+
                     new_connector = StatefulConnector(
                         data_manager=data_manager,
                         action_effects=datasource_actions,
@@ -360,7 +360,7 @@ def main():
     aiengine_pb2_grpc.add_AIEngineServicer_to_server(AIEngine(), server)
     server.add_insecure_port("[::]:8004")
     server.start()
-    print(f"AIEngine: gRPC server listening on port {8004}", flush=True)
+    print('AIEngine: gRPC server listening on port 8004', flush=True)
 
     wait_parent_process()
     cleanup_on_shutdown()

@@ -51,7 +51,7 @@ class Trainer:
         self.action_size = len(data_manager.action_names)
 
         self.request_url = (
-            self.BASE_URL + f"/{pod_name}/training_runs/{flight}/episodes"
+            f"{self.BASE_URL}/{pod_name}/training_runs/{flight}/episodes"
         )
 
         self.training_episodes = number_episodes
@@ -128,7 +128,7 @@ class Trainer:
         return episode_reward, episode_actions
 
     def train(self):
-        with self.TRAINING_LOCK, self.data_manager:
+        with (self.TRAINING_LOCK, self.data_manager):
             print_event(self.pod_name, f"Training {self.training_episodes} episodes...")
 
             not_learning_episodes = 0
@@ -165,8 +165,7 @@ class Trainer:
                 episode_end = math.floor(time.time())
 
                 if self.training_goal != "":
-                    loc = {}
-                    loc["score"] = episode_reward
+                    loc = {"score": episode_reward}
                     self.custom_training_goal_met = somewhat_safe_eval(
                         self.training_goal, loc
                     )

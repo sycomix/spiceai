@@ -5,7 +5,7 @@ import requests
 apiHost = "https://api.github.com"
 token = os.getenv("GITHUB_TOKEN")
 
-if token == None:
+if token is None:
     print("ERROR: Specify GITHUB_TOKEN environment variable")
     exit(1)
 
@@ -24,10 +24,7 @@ parser.add_argument('artifact', nargs='+')
 def getReleaseByTag(owner, repo, tag):
     releaseInfo = requests.get(f"{apiHost}/repos/{owner}/{repo}/releases/tags/{tag}")
 
-    if releaseInfo.status_code == 404:
-        return None
-
-    return releaseInfo.json()
+    return None if releaseInfo.status_code == 404 else releaseInfo.json()
 
 def getUploadUrl(artifactPath, originalUploadUrl):
     uploadUrl = originalUploadUrl.replace("{?name,label}", "")
@@ -97,9 +94,9 @@ def actionUpload(args):
     releaseInfo = getReleaseByTag(args.owner, args.repo, args.tag)
 
     is_prerelease = args.prerelease == "true"
-    
+
     # Step 2: Create the release if it doesn't exist
-    if releaseInfo == None:
+    if releaseInfo is None:
         print("Creating release")
         releaseInfo = createRelease(args.owner, args.repo, args.tag, args.release_name, args.body, is_prerelease)
         print("Release created!")
@@ -128,7 +125,7 @@ def actionDelete(args):
     # Step 1: Get the release
     releaseInfo = getReleaseByTag(args.owner, args.repo, args.tag)
 
-    if releaseInfo == None:
+    if releaseInfo is None:
         print(f"Unable to find a release with tag: {args.tag}")
         return
 
